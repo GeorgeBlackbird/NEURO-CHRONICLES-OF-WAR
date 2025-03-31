@@ -1,0 +1,631 @@
+/* === Переменные === */
+:root {
+    --header-bg: #6D614F;
+    --body-bg: #E8E3D6;
+    --accent-color: #556B2F;
+    --text-color: #4A4A4A;
+    --light-text: #FFFFFF;
+    --nav-hover-color: #E8E3D6; /* Цвет текста при наведении в навигации */
+    --btn-hover-bg: #47582C;
+    --quote-border-color: #556B2F;
+    --quote-mark-color: #6D614F;
+    --timeline-section-bg: #fff;
+    --card-bg: #fff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+
+    --font-primary: 'Montserrat', Arial, sans-serif;
+    --font-accent: 'Molot', Arial, sans-serif; /* Использовать Arial как запасной */
+
+    --container-width: 1200px;
+}
+
+/* === Шрифты === */
+@font-face {
+    font-family: 'Molot';
+    src: url('../res/fonts/Molot.otf') format('opentype'); /* Путь относительно CSS файла */
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap; /* Для улучшения производительности загрузки */
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../res/fonts/Montserrat-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../res/fonts/Montserrat-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* === Базовые стили и сброс === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-primary);
+    background-color: var(--body-bg);
+    color: var(--text-color);
+}
+
+main {
+    flex: 1; /* Занимает все доступное пространство между header и footer */
+    padding: 40px 20px;
+}
+
+/* === Анимации загрузки и перехода === */
+
+/* Прелоадер (начальная загрузка) */
+.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--header-bg); /* Темный фон шапки */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Выше всех элементов */
+    transition: opacity 0.5s ease, visibility 0.5s ease; /* Плавное исчезновение */
+    visibility: visible;
+    opacity: 1;
+}
+
+.loader-text {
+    font-family: var(--font-accent); /* Шрифт Molot */
+    font-size: clamp(2rem, 5vw, 3rem); /* Адаптивный размер */
+    color: var(--light-text);
+    letter-spacing: 2px;
+    animation: pulse 1.8s infinite ease-in-out; /* Пульсация текста */
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(0.98);
+    }
+}
+
+/* Класс для скрытия прелоадера */
+.preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Оверлей для перехода между страницами */
+.page-transition-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--accent-color); /* Зеленый цвет */
+    z-index: 9999; /* Чуть ниже прелоадера */
+    transform: scaleY(0); /* Начинаем с высоты 0 */
+    transform-origin: bottom; /* Анимация идет снизу вверх */
+    transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1); /* Скорость и плавность анимации */
+    visibility: hidden; /* Изначально невидимый и не мешает */
+}
+
+/* Состояние, когда страница "уходит" (оверлей закрывает) */
+body.page-exiting .page-transition-overlay {
+    visibility: visible;
+    transform: scaleY(1); /* Разворачиваем на весь экран */
+}
+
+/* Анимация появления контента новой страницы */
+body {
+    /* Добавляем к существующим стилям body */
+    opacity: 0; /* Изначально страница невидима */
+    transition: opacity 0.4s ease-in; /* Плавное появление */
+}
+
+/* Состояние, когда страница загружена и готова к показу */
+body.page-loaded {
+    opacity: 1; /* Показываем страницу */
+    transition-delay: 0.1s;
+}
+
+/* === Шапка (общая для всех страниц) === */
+header {
+    background: var(--header-bg);
+    padding: 15px 0;
+    color: var(--light-text);
+}
+
+.header-inner {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: bold;
+    color: var(--light-text);
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+.logo:hover,
+.logo:focus {
+    color: var(--light-text);
+    opacity: 0.9;
+    outline: none;
+}
+
+.logo-image {
+    max-height: 75px;
+    width: auto;
+    display: block;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    font-family: var(--font-accent);
+    letter-spacing: 1.25px;
+    font-size: 30px;
+}
+
+nav a {
+    margin-left: 30px;
+    text-decoration: none;
+    color: var(--light-text);
+    transition: color 0.3s;
+    font-family: var(--font-accent);
+    font-size: 30px;
+}
+
+nav a:hover,
+nav a:focus { /* Добавлено :focus для доступности */
+    color: var(--nav-hover-color);
+    outline: none; /* Можно добавить кастомный стиль фокуса */
+}
+
+
+/* === Стили для index.html === */
+/* (Если main имеет общий padding, здесь можно убрать его или оставить специфичный для страницы) */
+.index-main {
+    background-color: var(--body-bg); /* Фон уже задан в body, можно убрать если не нужен специфичный */
+}
+
+.sections-container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+.content-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap; /* Добавлено для адаптивности */
+}
+
+.image-container {
+    flex: 1 1 40%; /* Позволяет сжиматься и расти, базовая ширина 40% */
+    max-width: 500px; /* Ограничение максимальной ширины */
+    min-width: 280px; /* Минимальная ширина для адаптивности */
+}
+
+.image-container img {
+    width: 100%; /* Картинка заполняет контейнер */
+    height: auto;
+    border-radius: 8px;
+    display: block; /* Убирает лишний отступ снизу */
+}
+
+.text-content {
+    flex: 1 1 55%; /* Занимает оставшееся место, базовая ширина 55% */
+    min-width: 280px;
+}
+
+.text-content h1 {
+    font-size: clamp(2.5rem, 5vw + 1rem, 4.7rem); /* Адаптивный размер шрифта (min, preferred, max) ~ 40px - 75px */
+    margin-bottom: 20px;
+    color: var(--accent-color);
+    font-family: var(--font-accent);
+    line-height: 1.1;
+}
+
+.text-content p {
+    line-height: 1.6;
+    margin-bottom: 25px;
+    font-size: 1.1rem; /* Немного больше стандартного */
+}
+
+.btn {
+    display: inline-block; /* Изменено с block для лучшего встраивания */
+    margin-top: 30px;
+    width: fit-content;
+    padding: 15px 45px;
+    background: var(--accent-color);
+    color: var(--light-text);
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+    font-family: var(--font-primary);
+    font-size: 1.1rem; /* large */
+    font-weight: bold;
+    text-align: center;
+    border: none; /* Для единообразия с ссылками */
+    cursor: pointer;
+}
+
+.btn:hover,
+.btn:focus {
+    background: var(--btn-hover-bg);
+    outline: none; /* Кастомный стиль фокуса при необходимости */
+}
+
+.centered-btn-container { /* Дополнительный контейнер для центрирования кнопки */
+    text-align: center;
+    margin-top: 30px;
+}
+
+.quote-block {
+    margin: 40px 0;
+    position: relative;
+    padding: 5px;
+    background: rgba(255, 255, 255, 0.1); /* Почти прозрачный фон */
+    border-radius: 8px;
+    border-left: 4px solid var(--quote-border-color);
+}
+
+.quote-text {
+    font-size: 1.4em;
+    line-height: 1.6;
+    color: var(--text-color);
+    position: relative;
+    padding-left: 50px;
+    margin-left: 20px;
+    quotes: "“" "”";
+    font-style: italic;
+}
+
+.quote-text::before {
+    content: open-quote;
+    font-size: 4em;
+    color: var(--quote-mark-color);
+    position: absolute;
+    left: -15px;
+    top: 15px;
+    line-height: 0.5;
+    font-family: var(--font-accent);
+    opacity: 0.8;
+}
+
+.quote-author {
+    display: block;
+    margin-top: 20px;
+    text-align: right;
+    font-family: var(--font-accent);
+    color: var(--accent-color);
+    font-size: 1.2em;
+    letter-spacing: 1px;
+}
+
+.quote-author::before {
+    content: "— ";
+}
+
+
+/* === Стили для movies.html === */
+.timeline-section {
+    padding: 20px 20px; /* Уменьшен вертикальный паддинг */
+    background: var(--timeline-section-bg);
+    margin-bottom: 40px; /* Отступ от основного контента */
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.timeline-container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    position: relative;
+}
+
+.timeline-years {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Для адаптивности */
+    gap: 15px; /* Отступы между кнопками */
+    position: relative;
+    z-index: 2; /* Над возможными элементами фона */
+}
+
+.timeline-year { /* Теперь это стиль для <button> */
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.3s;
+    font-family: var(--font-accent);
+    font-size: clamp(1.8rem, 4vw, 2.25rem); /* Адаптивный размер ~28-36px */
+    color: var(--accent-color);
+    border: none; /* Убираем стандартные стили кнопки */
+    background: none; /* Убираем стандартные стили кнопки */
+    border-bottom: 3px solid transparent;
+}
+
+.timeline-year.active {
+    border-color: var(--accent-color);
+}
+
+.timeline-year:hover,
+.timeline-year:focus {
+     opacity: 0.8;
+     outline: none; /* Кастомный стиль фокуса при необходимости */
+}
+
+.main-content { /* Контейнер для переключаемых блоков */
+    position: relative;
+    min-height: 500px; /* Уменьшено, чтобы избежать лишнего пустого места */
+    max-width: var(--container-width); /* Ограничиваем ширину */
+    margin: 0 auto; /* Центрируем */
+    padding: 0; /* Убираем внутренний паддинг, т.к. у main уже есть */
+}
+
+.year-content {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s;
+    position: absolute; /* Позволяет накладываться друг на друга */
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: none; /* Используем display: none для полного скрытия */
+}
+
+.year-content.active {
+    display: block; /* Показываем активный блок */
+    opacity: 1;
+    visibility: visible;
+    position: relative; /* Возвращаем в поток */
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content-section { /* Блок с событием (картинка + текст) */
+    display: flex;
+    flex-wrap: wrap; /* Для адаптивности */
+    gap: 40px;
+    margin-bottom: 60px;
+    align-items: center;
+}
+
+.content-section:nth-child(even) { /* Чередование порядка для визуального разнообразия */
+    flex-direction: row-reverse;
+}
+
+.event-media {
+    flex: 1 1 45%; /* Растет/сжимается, база 45% */
+    max-width: 600px;
+    min-width: 280px;
+}
+
+.event-media img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    display: block;
+}
+
+.event-text {
+    flex: 1 1 50%; /* Растет/сжимается, база 50% */
+    padding: 10px; /* Небольшой паддинг */
+    min-width: 280px;
+}
+
+.event-text h2 { /* Дата события */
+    font-family: var(--font-accent);
+    color: var(--accent-color);
+    font-size: clamp(2rem, 5vw, 2.8rem); /* ~32-45px */
+    margin-bottom: 5px;
+}
+
+.event-text h3 { /* Название события */
+    font-family: var(--font-accent);
+    color: var(--header-bg); /* Используем цвет шапки для связи */
+    font-size: clamp(1.5rem, 4vw, 1.9rem); /* ~24-30px */
+    margin-bottom: 20px;
+}
+
+.event-text p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Блоки с фильмами */
+.films-row {
+    display: grid;
+    /* Адаптивные колонки: минимум 250px, максимум 1fr */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin: 40px 0;
+    align-items: start; /* Выравнивание карточек по верху */
+}
+
+.film-card {
+    height: 100%; /* Занимает всю высоту ячейки грида */
+    display: flex;
+    flex-direction: column; /* Постер сверху, информация снизу */
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.film-card:hover,
+.film-card:focus-within { /* Эффект при наведении или фокусе внутри */
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    outline: none;
+}
+
+.movie-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3; /* Поддерживаем соотношение сторон постера */
+    object-fit: cover; /* Масштабируем изображение, сохраняя пропорции */
+    /* Убрана фиксированная высота для лучшей адаптивности с aspect-ratio */
+    border-bottom: 1px solid #eee; /* Тонкая линия между постером и текстом */
+}
+
+.movie-info {
+    padding: 15px;
+    text-align: center;
+    flex-grow: 1; /* Занимает оставшееся место в карточке */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Центрируем контент по вертикали */
+    align-items: center;
+}
+
+.movie-title {
+    font-family: var(--font-accent);
+    color: var(--accent-color);
+    margin: 10px 0;
+    font-size: clamp(1.5rem, 3vw, 1.9rem); /* ~24-30px */
+    hyphens: auto; /* Автоматические переносы */
+    overflow-wrap: break-word;
+    max-width: 100%;
+    line-height: 1.2;
+    padding: 0 5px; /* Небольшой горизонтальный паддинг */
+}
+
+/* === Футер (общий) === */
+footer {
+    background: var(--header-bg);
+    color: var(--light-text);
+    text-align: center;
+    padding: 20px;
+    margin-top: auto; /* Прижимает футер к низу, если контента мало */
+    font-size: 0.9rem;
+}
+
+/* === Медиа-запросы (Адаптивность) === */
+
+/* Планшеты и меньше */
+@media (max-width: 768px) {
+    .header-inner {
+        flex-direction: column;
+        gap: 15px;
+    }
+    nav {
+        margin-top: 10px;
+    }
+    nav a {
+        margin: 0 10px; /* Уменьшаем отступы */
+        font-size: 24px; /* Уменьшаем шрифт */
+    }
+    .content-wrapper {
+        flex-direction: column; /* Складываем колонки в index.html */
+        gap: 20px;
+    }
+     .content-wrapper:nth-child(even) { /* Сбрасываем реверс на мобильных */
+         flex-direction: column;
+     }
+    .image-container,
+    .text-content {
+        flex-basis: 100%; /* Занимают всю ширину */
+        max-width: 100%;
+    }
+
+    .timeline-years {
+        justify-content: center; /* Центрируем кнопки годов */
+    }
+
+    .content-section {
+        flex-direction: column !important; /* Всегда колонка на мобильных, !important чтобы перебить nth-child */
+        gap: 20px;
+    }
+     .event-media,
+     .event-text {
+         flex-basis: 100%;
+         max-width: 100%;
+         padding: 0;
+     }
+
+     /* Уже адаптивно благодаря auto-fit, но можно явно указать 2 колонки */
+     /* .films-row {
+         grid-template-columns: repeat(2, 1fr);
+     } */
+}
+
+/* Мобильные телефоны */
+@media (max-width: 576px) {
+    nav a {
+        font-size: 20px;
+    }
+
+    .text-content h1 {
+        font-size: 2rem; /* Еще меньше на совсем маленьких экранах */
+    }
+    .text-content p, .event-text p, .btn {
+         font-size: 1rem;
+    }
+     .quote-text {
+         font-size: 1.2em;
+         padding-left: 35px;
+         margin-left: 10px;
+     }
+     .quote-text::before {
+         font-size: 3em;
+         left: -10px;
+         top: 10px;
+     }
+    .timeline-year {
+        font-size: 1.5rem;
+        padding: 8px;
+    }
+     .event-text h2 {
+         font-size: 1.8rem;
+     }
+     .event-text h3 {
+         font-size: 1.3rem;
+     }
+    /* Одна колонка для фильмов */
+     .films-row {
+         grid-template-columns: 1fr;
+     }
+     .movie-title {
+         font-size: 1.5rem;
+     }
+}
