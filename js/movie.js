@@ -1,99 +1,88 @@
+// js/movie.js
 document.addEventListener('DOMContentLoaded', () => {
-    // Элементы модальных окон
-    const imageModal = document.getElementById('image-modal');
-    const videoModal = document.getElementById('video-modal');
-    const modalImg = document.getElementById('modal-image');
-    const modalVideo = document.getElementById('modal-video');
-    const modalCaption = document.getElementById('modal-caption');
-    
-    // Кнопки закрытия
-    const closeButtons = document.querySelectorAll('.modal-close');
-    
+    // Модальные окна
+    const modals = {
+        image: document.getElementById('image-modal'),
+        video: document.getElementById('video-modal'),
+        imageContent: document.getElementById('modal-image'),
+        videoContent: document.getElementById('modal-video'),
+        caption: document.getElementById('modal-caption')
+    };
+
     // Галерея
-    const galleryItems = document.querySelectorAll('.gallery-item');
+    const galleryItems = document.querySelectorAll('.gallery-item:not(.gallery-item-main)');
     const mainVideoItem = document.querySelector('.gallery-item-main video');
 
-    // Обработчик для обычных изображений
+    // Обработчики галереи
     galleryItems.forEach(item => {
-        if (item.classList.contains('gallery-item-main')) return;
-        
         item.addEventListener('click', () => {
             const img = item.querySelector('img');
             const caption = item.querySelector('.gallery-caption')?.textContent || '';
             
-            modalImg.src = img.src;
-            modalImg.alt = img.alt;
-            modalCaption.textContent = caption;
+            modals.imageContent.src = img.src;
+            modals.imageContent.alt = img.alt;
+            modals.caption.textContent = caption;
             
-            imageModal.classList.add('active');
+            modals.image.classList.add('active');
             document.body.style.overflow = 'hidden';
         });
     });
 
-    // Обработчик для главного видео (трейлера)
     if (mainVideoItem) {
         const videoContainer = mainVideoItem.closest('.gallery-item');
         const videoSource = mainVideoItem.querySelector('source').src;
         
         videoContainer.addEventListener('click', () => {
-            modalVideo.querySelector('source').src = videoSource;
-            modalVideo.load(); // Перезагружаем видео
-            videoModal.classList.add('active');
+            modals.videoContent.querySelector('source').src = videoSource;
+            modals.videoContent.load();
+            modals.video.classList.add('active');
             document.body.style.overflow = 'hidden';
             
-            // Автовоспроизведение при открытии
-            modalVideo.play().catch(e => console.log('Автовоспроизведение не разрешено:', e));
+            modals.videoContent.play().catch(e => console.log('Автовоспроизведение не разрешено:', e));
         });
     }
 
     // Закрытие модальных окон
-    closeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                modal.classList.remove('active');
-                
-                // Пауза видео при закрытии
-                if (modal.id === 'video-modal') {
-                    modalVideo.pause();
-                    modalVideo.currentTime = 0;
-                }
-            });
-            
-            document.body.style.overflow = '';
-        });
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', closeModals);
     });
 
-    // Закрытие по клику вне контента
     document.querySelectorAll('.modal-overlay').forEach(modal => {
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
-                
-                // Пауза видео при закрытии
-                if (modal.id === 'video-modal') {
-                    modalVideo.pause();
-                    modalVideo.currentTime = 0;
-                }
-            }
+            if (e.target === modal) closeModals();
         });
     });
 
-    // Закрытие по Esc
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                if (modal.classList.contains('active')) {
-                    modal.classList.remove('active');
-                    document.body.style.overflow = '';
-                    
-                    // Пауза видео при закрытии
-                    if (modal.id === 'video-modal') {
-                        modalVideo.pause();
-                        modalVideo.currentTime = 0;
-                    }
-                }
-            });
-        }
+        if (e.key === 'Escape') closeModals();
+    });
+
+    function closeModals() {
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.classList.remove('active');
+            
+            if (modal.id === 'video-modal') {
+                modals.videoContent.pause();
+                modals.videoContent.currentTime = 0;
+            }
+        });
+        
+        document.body.style.overflow = '';
+    }
+
+    // Табы
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.dataset.tab;
+            
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            button.classList.add('active');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
     });
 });

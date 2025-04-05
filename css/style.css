@@ -491,13 +491,16 @@ nav a:focus { /* Добавлено :focus для доступности */
     overflow: hidden;
     box-shadow: 0 4px 6px var(--shadow-color);
     transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
 
 .film-card:hover,
-.film-card:focus-within { /* Эффект при наведении или фокусе внутри */
+.film-card:focus { /* Заменяем :focus-within на :focus */
     transform: translateY(-5px);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-    outline: none;
+    outline: none; /* Осторожно: это может ухудшить доступность */
 }
 
 .movie-poster {
@@ -701,6 +704,137 @@ nav a:focus { /* Добавлено :focus для доступности */
     text-align: center;
     font-family: var(--font-primary);
     font-size: 0.9rem;
+}
+
+.tabs-container {
+    margin-bottom: 60px;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 2px solid var(--accent-color);
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.tab-button {
+    font-family: var(--font-accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--header-bg);
+    position: relative;
+    transition: all 0.3s;
+    font-size: 1.8rem;
+    padding: 10px 40px;
+    margin: 0 10px;
+}
+
+.tab-button:hover {
+    color: var(--accent-color);
+}
+
+.tab-button.active {
+    color: var(--accent-color);
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.opinions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+#opinions-tab .quote-block {
+    background: rgba(255, 255, 255, 0.7);
+    border-left: 4px solid var(--header-bg);
+    flex-grow: 1;
+}
+
+#opinions-tab .quote-text {
+    font-size: 1.1rem;
+}
+
+#opinions-tab .quote-author {
+    color: var(--header-bg);
+    font-size: 1rem;
+}
+
+/* Стили для раздела мнений ИИ */
+.ai-opinions-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.ai-poster-block {
+    position: sticky;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.ai-poster-title {
+    font-family: var(--font-accent);
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.ai-poster {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    aspect-ratio: 2/3;
+    object-fit: cover;
+}
+
+.ai-poster-description {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    text-align: center;
+    opacity: 0.8;
+}
+
+.ai-quotes-block {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.ai-quote {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.ai-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    flex-shrink: 0;
+    color: var(--accent-color);
 }
 
 .movie-info-grid {
@@ -931,6 +1065,21 @@ footer {
      .modal-video {
         width: 100%;
      }
+
+     .ai-opinions-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .ai-poster-block {
+        position: static;
+        margin-bottom: 30px;
+    }
+    
+    .ai-quote {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
 
      /* Уже адаптивно благодаря auto-fit, но можно явно указать 2 колонки */
      /* .films-row {
